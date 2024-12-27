@@ -176,24 +176,24 @@ def univariate_analysis(df):
             plt.ylabel("Frequency")
             plt.show()
 
-# Bivariate or Multivariate Analysis
+
 def bivariate_analysis(df):
     """
     Perform bivariate or multivariate analysis to explore relationships.
     """
-    # Correlation heatmap for numerical variables
-    plt.figure(figsize=(12, 8))
-    correlation = df.corr()
-    sns.heatmap(correlation, annot=True, cmap='coolwarm')
-    plt.title("Correlation Heatmap")
-    plt.show()
+    # Select only numerical columns for correlation
+    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
+    
+    # Ensure there are no missing values in the numerical columns
+    df_numerical = df[numerical_columns].dropna()
 
     # Scatter plot for TotalPremium vs. TotalClaims (completed)
-    plt.scatter(df['TotalPremium'], df['TotalClaims'])
-    plt.title('Scatter Plot of TotalPremium vs. TotalClaims')
-    plt.xlabel('TotalPremium')
-    plt.ylabel('TotalClaims')
-    plt.show()
+    if 'TotalPremium' in df.columns and 'TotalClaims' in df.columns:
+        plt.scatter(df['TotalPremium'], df['TotalClaims'])
+        plt.title('Scatter Plot of TotalPremium vs. TotalClaims')
+        plt.xlabel('TotalPremium')
+        plt.ylabel('TotalClaims')
+        plt.show()
 
 # Data Comparison
 def data_comparison(df):
