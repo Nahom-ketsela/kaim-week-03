@@ -44,6 +44,44 @@ def data_summarization(df):
     print("\nData Types:")
     print(df.info())  # Display data types of all columns
 
+def review_data_structure(df):
+    """
+    Review the data structure (dtype) of each column and confirm if categorical variables,
+    dates, and numerical features are correctly formatted.
+    """
+    print("Data Structure (Dtypes of each column):")
+    print(df.dtypes)
+    print("\n")
+    
+    # Check for columns that need type conversion
+    print("Columns that may need conversion to correct types:")
+    for col in df.columns:
+        if df[col].dtype == 'object':  # Potential categorical or date columns
+            if df[col].str.contains('-').any():  # Simple check for date-like values
+                print(f"{col} might need to be converted to datetime.")
+            else:
+                print(f"{col} seems to be a categorical column.")
+
+def descriptive_statistics(df):
+    """
+    Calculate the descriptive statistics for numerical columns such as TotalPremium, TotalClaims, etc.
+    """
+    # Numerical columns to consider for descriptive statistics
+    numerical_cols = df.select_dtypes(include=['number']).columns
+    
+    # Get the descriptive statistics
+    desc_stats = df[numerical_cols].describe().T  # Transpose for better readability
+    
+    # Calculate additional statistics such as variance and standard deviation
+    desc_stats['variance'] = df[numerical_cols].var()
+    desc_stats['std_dev'] = df[numerical_cols].std()
+    
+    # Display the result
+    print("Descriptive Statistics (with variability metrics):")
+    print(desc_stats)
+    
+    return desc_stats
+    
 # Data Quality Assessment
 def data_quality_assessment(df):
     """
@@ -52,6 +90,57 @@ def data_quality_assessment(df):
     print("\nMissing Values:")
     missing_values = df.isnull().sum()
     print(missing_values[missing_values > 0])  # Print columns with missing values
+
+
+def handle_missing_values(df, threshold=0.2, default_date='1900-01-01', default_value='Unknown'):
+    """
+    Handle missing values in the DataFrame by:
+    1. Dropping columns with too many missing values (threshold).
+    2. Filling missing categorical values with the most frequent value.
+    3. Filling missing numerical values with the median.
+    4. Handling missing dates by filling with a default date.
+    5. Handling missing values for specific columns like 'Bank'.
+    
+    Args:
+    - df: DataFrame containing the data.
+    - threshold: Proportion of missing values beyond which the column is dropped.
+    - default_date: The default date to use for filling missing date values.
+    - default_value: The value to use for filling missing categorical values.
+    
+    Returns:
+    - df: DataFrame with missing values handled.
+    """
+    # Step 1: Drop columns with missing values above the threshold
+    missing_percent = df.isnull().mean()
+    cols_to_drop = missing_percent[missing_percent > threshold].index
+    df.drop(columns=cols_to_drop, inplace=True)
+    
+    # Step 2: Handle missing categorical columns (fill with mode)
+    for col in df.select_dtypes(include=['object']).columns:
+        if df[col].isnull().sum() > 0:
+            df[col] = df[col].fillna(df[col].mode()[0])  # Fill with mode (most frequent value)
+    
+    # Step 3: Handle missing numerical columns (fill with median)
+    for col in df.select_dtypes(include=['number']).columns:
+        if df[col].isnull().sum() > 0:
+            df[col] = df[col].fillna(df[col].median())  # Fill with median
+    
+    # Step 4: Handle missing dates (fill with default date)
+    date_columns = df.select_dtypes(include=['datetime']).columns
+    for col in date_columns:
+        if df[col].isnull().sum() > 0:
+            df[col] = df[col].fillna(pd.to_datetime(default_date))  # Fill with default date
+    
+    # Step 5: Handle missing values in specific columns (e.g., 'Bank')
+    if 'Bank' in df.columns:
+        df['Bank'] = df['Bank'].fillna(default_value)  # Fill 'Bank' column missing values with 'Unknown'
+    
+    # Optional: Create missing flags for all columns
+    for col in df.columns:
+        if col in df.columns:
+            df[f'{col}_missing'] = df[col].isnull().astype(int)
+    
+    return df
 
 # Univariate Analysis
 def univariate_analysis(df):
