@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the dataset in chunks to avoid memory issues
@@ -131,7 +132,7 @@ def handle_missing_values(df, threshold=0.2, default_date='1900-01-01', default_
         if df[col].isnull().sum() > 0:
             df[col] = df[col].fillna(pd.to_datetime(default_date))  # Fill with default date
     
-    # Step 5: Handle missing values in specific columns (e.g., 'Bank')
+    # Step 5: Handle missing values in specific columns ( 'Bank')
     if 'Bank' in df.columns:
         df['Bank'] = df['Bank'].fillna(default_value)  # Fill 'Bank' column missing values with 'Unknown'
     
@@ -142,7 +143,7 @@ def handle_missing_values(df, threshold=0.2, default_date='1900-01-01', default_
     
     return df
 
-# Univariate Analysis
+
 def univariate_analysis(df):
     """
     Perform univariate analysis with histograms for numerical columns 
@@ -150,7 +151,16 @@ def univariate_analysis(df):
     """
     # Plot histograms for numerical columns
     numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
-    df[numerical_columns].hist(bins=15, figsize=(15, 10), layout=(3, 4))
+    
+    # Number of numerical columns
+    n = len(numerical_columns)
+    
+    # Dynamically calculate number of rows and columns for subplots
+    ncols = 4  # Keep the number of columns fixed at 4
+    nrows = np.ceil(n / ncols).astype(int)  # Calculate the number of rows needed
+
+    # Plot histograms
+    df[numerical_columns].hist(bins=15, figsize=(15, nrows * 4), layout=(nrows, ncols))
     plt.suptitle("Histograms of Numerical Variables")
     plt.tight_layout()
     plt.show()
