@@ -15,17 +15,7 @@ The project sharpens skills in Data Engineering (DE), Predictive Analytics (PA),
 
 ---
 
-## Tasks Overview
 
-### Git and GitHub Setup
-
-**Objective:** Initialize version control and establish CI/CD pipelines.
-
-**Key Steps:**
-- Create a GitHub repository and initialize Git.
-- Set up branches for each task (e.g., task-1, task-2).
-- Implement GitHub Actions for CI/CD.
-- Commit work regularly with meaningful messages.
 
 ### Data Version Control (DVC)
 
