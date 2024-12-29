@@ -268,9 +268,3 @@ def creative_visualizations(df):
     plt.legend(title='Vehicle Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.show()
 
-    # Visualization 3: Heatmap of correlations with annotated values
-    plt.figure(figsize=(12, 8))
-    corr = df.corr()
-    sns.heatmap(corr, annot=True, cmap='coolwarm', center=0)
-    plt.title("Correlation Heatmap with Annotations")
-    plt.show()
