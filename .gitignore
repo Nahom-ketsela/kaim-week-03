@@ -1,2 +1,5 @@
 venv/
 /data
+dvc_storage/files/md5/
+*.csv
+*.zip
