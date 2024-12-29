@@ -216,16 +216,35 @@ def data_comparison(df):
         plt.title("Distribution of TotalPremium by Province")
         plt.show()
 
-# Outlier Detection
+
+#outlier detetction function
 def outlier_detection(df):
     """
     Use box plots to detect outliers in numerical data.
+    Handles large datasets efficiently without limiting the number of rows.
+    
+    Parameters:
+    - df (DataFrame): The input dataframe.
     """
-    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(data=df[numerical_columns], orient='h', palette="Set2")
-    plt.title("Boxplots of Numerical Variables")
-    plt.show()
+    # Reduce memory usage
+    for col in df.select_dtypes(include=['float64', 'int64']).columns:
+        if df[col].dtype == 'float64':
+            df[col] = df[col].astype('float32')
+        elif df[col].dtype == 'int64':
+            df[col] = df[col].astype('int32')
+    
+    # Select numerical columns
+    numerical_columns = df.select_dtypes(include=['float32', 'int32']).columns
+    
+    # Plot each column individually
+    for column in numerical_columns:
+        plt.figure(figsize=(12, 6))
+        sns.boxplot(x=df[column])  # Removed palette to avoid warning
+        plt.title(f"Boxplot of {column}")
+        plt.xlabel(column)
+        plt.tight_layout()
+        plt.show()
+
 
 # Visualization
 def creative_visualizations(df):
