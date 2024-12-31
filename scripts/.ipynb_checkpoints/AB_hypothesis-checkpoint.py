@@ -30,15 +30,36 @@ def test_risk_between_zipcodes(data):
         "p-Value": result.pvalue,
         "Reject Null": result.pvalue < 0.05
     }
-
+    
 def test_margin_difference_between_zipcodes(data):
     """
     Test if there are significant margin differences (Profit Margin) between ZIP codes.
     Null Hypothesis: There are no significant margin differences between ZIP codes.
     """
+    # Filter valid data
+    data = data[(data['TotalPremium'] > 0) & (data['TotalClaims'] >= 0)].copy()
+    data.dropna(subset=['PostalCode'], inplace=True)
+    
+    # Calculate Profit Margin
     data['ProfitMargin'] = (data['TotalPremium'] - data['TotalClaims']) / data['TotalPremium']
+    data['ProfitMargin'] = data['ProfitMargin'].fillna(0)  # Avoid chained assignment warning
+    
+    # Group by ZIP codes
     zipcode_groups = [data[data['PostalCode'] == z]['ProfitMargin'] for z in data['PostalCode'].unique()]
-    result = f_oneway(*zipcode_groups)
+    valid_groups = [group for group in zipcode_groups if len(group) > 1]
+    
+    # Check for sufficient valid groups
+    if len(valid_groups) < 2:
+        return {
+            "Test": "ANOVA",
+            "Null Hypothesis": "No significant margin differences between ZIP codes",
+            "F-Statistic": np.nan,
+            "p-Value": np.nan,
+            "Reject Null": False
+        }
+    
+    # Perform ANOVA
+    result = f_oneway(*valid_groups)
     return {
         "Test": "ANOVA",
         "Null Hypothesis": "No significant margin differences between ZIP codes",
@@ -46,6 +67,8 @@ def test_margin_difference_between_zipcodes(data):
         "p-Value": result.pvalue,
         "Reject Null": result.pvalue < 0.05
     }
+
+
 
 def test_risk_difference_gender(data):
     """
