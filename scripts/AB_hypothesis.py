@@ -1,5 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.stats import f_oneway, ttest_ind
+import numpy as np
 
 def test_risk_across_provinces(data):
     """
