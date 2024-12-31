@@ -88,11 +88,31 @@ def test_risk_difference_gender(data):
 
 def run_all_tests(data):
     """
-    Run all hypothesis tests and return results.
+    Run all hypothesis tests and visualize results.
     """
     results = []
     results.append(test_risk_across_provinces(data))
     results.append(test_risk_between_zipcodes(data))
     results.append(test_margin_difference_between_zipcodes(data))
     results.append(test_risk_difference_gender(data))
-    return results
+    
+    # Convert results to DataFrame for better visualization
+    results_df = pd.DataFrame(results)
+    
+    # Plot the results
+    fig, ax = plt.subplots(1, 2, figsize=(14, 7))
+    
+    # Bar plot for p-Values
+    ax[0].barh(results_df['Test'], results_df['p-Value'], color='skyblue')
+    ax[0].set_xlabel('p-Value')
+    ax[0].set_title('p-Value for Each Test')
+    
+    # Bar plot for Null Hypothesis Rejection
+    ax[1].barh(results_df['Test'], results_df['Reject Null'].astype(int), color='lightcoral')
+    ax[1].set_xlabel('Reject Null (1 = Yes, 0 = No)')
+    ax[1].set_title('Null Hypothesis Rejection for Each Test')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return results_df
